@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+
+spring:
+  # DB
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull
+    username: ilhwa
+    password: 0819
+    driver-class-name: com.mysql.jdbc.Driver
+
+  # spring batch 메타테이블 자동 생성 ( always, embedded)
+  # 운영에서 수동으로 스크립트 생성 후 설정하는 것을 권장한다.
+  batch :
+    jdbc :
+      initialize-schema : always
+
+    #지정한 Batch Job 만 실행되도록 설정
+    #job.names: ${job.name:NONE}
+
+  # JPA
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect.storage_engine: innodb
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+
+    defer-datasource-initialization: true
+
+  #모든 데이터베이스에 sql 스크립트를 동작시킨다.
+#  sql:
+#    init:
+#      mode: always
+
+#          batch_size: 50
+#          order_inserts: true
+#          order_updates: true
+
+file:
+  input : coffee-list.csv
+
