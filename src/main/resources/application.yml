@@ -5,9 +5,7 @@ server:
 spring:
   # DB
   datasource:
-    url: jdbc:mysql://localhost:3306/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull
-    username: ilhwa
-    password: 0819
+
     driver-class-name: com.mysql.jdbc.Driver
 
   # spring batch 메타테이블 자동 생성 ( always, embedded)
