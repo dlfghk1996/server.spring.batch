@@ -1,94 +1,115 @@
 //package server.spring.batch.databaseJob;
 //
 //import jakarta.persistence.EntityManagerFactory;
+//import java.time.LocalDate;
+//import java.time.format.DateTimeFormatter;
 //import java.util.HashMap;
 //import java.util.List;
 //import java.util.Locale;
+//import java.util.Map;
 //import javax.sql.DataSource;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.batch.core.Job;
 //import org.springframework.batch.core.Step;
+//import org.springframework.batch.core.configuration.annotation.JobScope;
+//import org.springframework.batch.core.configuration.annotation.StepScope;
 //import org.springframework.batch.core.job.builder.JobBuilder;
 //import org.springframework.batch.core.launch.support.RunIdIncrementer;
 //import org.springframework.batch.core.repository.JobRepository;
 //import org.springframework.batch.core.step.builder.StepBuilder;
 //import org.springframework.batch.item.ItemStreamReader;
+//import org.springframework.batch.item.ItemWriter;
 //import org.springframework.batch.item.database.JpaItemWriter;
 //import org.springframework.batch.item.database.JpaPagingItemReader;
 //import org.springframework.batch.item.database.Order;
 //import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 //import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.transaction.PlatformTransactionManager;
 //import server.spring.batch.basic.Coffee;
 //import server.spring.batch.basic.CoffeeItemProcessor;
+//import server.spring.batch.common.domain.User;
+//import server.spring.batch.common.domain.UserPay;
+//import server.spring.batch.common.service.UserService;
 //
 //
 //// 수백만의 데이터에서 조건에 맞는 데이터를 추출하여 가공하는 Spring Batch를 구현해야했습니다.
 //@RequiredArgsConstructor //=> 생성자 DI를 위한 lombok 어노테이션
 //@Configuration
+//@ConditionalOnProperty(name="job.name", havingValue = JpaJobConfig.JOB_NAME)
 //public class JpaJobConfig {
-//    public static final String JOB_NAME = "memberPayAggregateJob";
-//    public static final String STEP_NAME = "memberPayAggregateStep";
-//    public static final String READER_NAME = "memberPayAggregateReader";
+//    public static final String JOB_NAME = "userPayJob";
 //
 //    private final EntityManagerFactory entityManagerFactory;
 //    private final JobRepository jobRepository;
 //    private final PlatformTransactionManager transactionManager;
 //
+//    private final UserService userService;
 //    private final static int CHUNK_SIZE = 10;
 //
-//    // simple Joa 이라는  Job 생성
+//
 //    @Bean
 //    public Job job() {
-//
 //        return new JobBuilder(JOB_NAME, jobRepository)
 //            .start(step())
 //            .build();
 //    }
 //
-//    @Bean
+//
+//    @Bean(name=JOB_NAME+"_step")
+//    @JobScope
 //    public Step step() {
-//        return new StepBuilder(STEP_NAME, jobRepository)
-//            .<ShopOrder, OrderHistory> chunk(3, transactionManager)
-//            .reader(reader())
+//        return new StepBuilder(JOB_NAME + "_step", jobRepository)
+//            .<UserPay, User> chunk(CHUNK_SIZE, transactionManager)
+//            .reader(reader(null, null))
 //            .processor(processor())
 //            .writer(writer())
 //            .build();
 //    }
 //
-//    @Bean
-//    public ItemStreamReader<Coffee> reader() throws Exception {
-//        HashMap<String, Order> sortKey = new HashMap<>();
-//        sortKey.put("first_name", Order.ASCENDING);
 //
-//        JpaPagingItemReader<Coffee> jpaPagingItemReader = new JpaPagingItemReader<>();
+//    @Bean(name=JOB_NAME+"_reader")
+//    @StepScope
+//    public ItemStreamReader<User> reader(
+//        @Value("#{jobParameters[status]}") ProductStatus status,
+//        @Value("#{jobParameters[createDate]}") String createDateStr) throws Exception {
 //
-//        jpaPagingItemReader.setName(READER_NAME);
-//        jpaPagingItemReader.setQueryString("select o from ShopOrder o join fetch o.customer c where c.id=1");
-//        jpaPagingItemReader.setEntityManagerFactory(entityManagerFactory);
-//        jpaPagingItemReader.setPageSize(CHUNK_SIZE);
-//        jpaPagingItemReader.setCurrentItemCount(0);
-//        jpaPagingItemReader.setMaxItemCount(100);
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//        LocalDate createDate = LocalDate.parse(createDateStr, formatter); // (3)
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("createDate", createDate);
+//        params.put("status", status);
+//
+//        JpaPagingItemReader<User> jpaPagingItemReader = new JpaPagingItemReaderBuilder<User>()
+//            .name(JOB_NAME+"_reader")
+//            .entityManagerFactory(entityManagerFactory)
+//            .pageSize(CHUNK_SIZE)
+//            .currentItemCount(0)
+//            .maxItemCount(100)
+//            .queryString("SELECT p FROM Product p WHERE p.createDate =:createDate AND p.status =:status")
+//            .parameterValues(params)
+//            .build();
+//
 //        jpaPagingItemReader.afterPropertiesSet();
 //
 //        return jpaPagingItemReader;
 //    }
 //
 //
-//    //  void write(List<? extends T> var1) throws Exception;
 //    @Bean
-//    public JpaItemWriter writer() {
-//        return new JpaItemWriterBuilder<Coffee>()
+//    public JpaItemWriter writer(SearchType searchType) {
+//        return new JpaItemWriterBuilder<User>()
 //            .entityManagerFactory(entityManagerFactory)
 //            .build();
-//
 //    }
 //
 //    @Bean
-//    public CoffeeItemProcessor processor() {
-//        return new CoffeeItemProcessor();
+//    public CustomItemProcessor processor() {
+//        return new CustomItemProcessor();
 //    }
 //
 //}
