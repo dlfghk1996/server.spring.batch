@@ -1,4 +1,4 @@
-package server.spring.batch.basic;
+package server.spring.batch.basic.job;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -8,8 +8,4 @@ import server.spring.batch.common.repository.UserRepository;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
-
-    public void roleUpdate(){
-
-    }
 }

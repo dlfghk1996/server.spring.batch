@@ -2,7 +2,7 @@
 //import org.springframework.batch.core.job.builder.JobBuilder;
 //import org.springframework.batch.core.launch.support.RunIdIncrementer;
 //import org.springframework.context.annotation.Bean;//package server.spring.batch.csvToDatabaseJob;
-//import server.spring.batch.basic.JobCompletionNotificationListener;
+//import server.spring.batch.basic.job.JobCompletionNotificationListener;
 ////
 //import jakarta.persistence.EntityManagerFactory;
 //import javax.sql.DataSource;
@@ -31,8 +31,8 @@
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.transaction.PlatformTransactionManager;
-//import server.spring.batch.basic.Coffee;
-//import server.spring.batch.basic.JobCompletionNotificationListener;
+//import server.spring.batch.basic.job.Coffee;
+//import server.spring.batch.basic.job.JobCompletionNotificationListener;
 //import org.springframework.core.io.Resource;
 //import server.spring.batch.common.domain.User;
 //

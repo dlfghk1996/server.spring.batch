@@ -4,24 +4,18 @@
 //import java.time.LocalDate;
 //import java.time.format.DateTimeFormatter;
 //import java.util.HashMap;
-//import java.util.List;
-//import java.util.Locale;
 //import java.util.Map;
-//import javax.sql.DataSource;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.batch.core.Job;
 //import org.springframework.batch.core.Step;
 //import org.springframework.batch.core.configuration.annotation.JobScope;
 //import org.springframework.batch.core.configuration.annotation.StepScope;
 //import org.springframework.batch.core.job.builder.JobBuilder;
-//import org.springframework.batch.core.launch.support.RunIdIncrementer;
 //import org.springframework.batch.core.repository.JobRepository;
 //import org.springframework.batch.core.step.builder.StepBuilder;
 //import org.springframework.batch.item.ItemStreamReader;
-//import org.springframework.batch.item.ItemWriter;
 //import org.springframework.batch.item.database.JpaItemWriter;
 //import org.springframework.batch.item.database.JpaPagingItemReader;
-//import org.springframework.batch.item.database.Order;
 //import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 //import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 //import org.springframework.beans.factory.annotation.Value;
@@ -29,30 +23,24 @@
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.transaction.PlatformTransactionManager;
-//import server.spring.batch.basic.Coffee;
-//import server.spring.batch.basic.CoffeeItemProcessor;
 //import server.spring.batch.common.domain.User;
-//import server.spring.batch.common.domain.UserPay;
-//import server.spring.batch.common.service.UserService;
 //
 //
 //// 수백만의 데이터에서 조건에 맞는 데이터를 추출하여 가공하는 Spring Batch를 구현해야했습니다.
-//@RequiredArgsConstructor //=> 생성자 DI를 위한 lombok 어노테이션
+//@RequiredArgsConstructor
 //@Configuration
 //@ConditionalOnProperty(name="job.name", havingValue = JpaJobConfig.JOB_NAME)
 //public class JpaJobConfig {
-//    public static final String JOB_NAME = "userPayJob";
+//    public static final String JOB_NAME = "jpaJob";
 //
 //    private final EntityManagerFactory entityManagerFactory;
 //    private final JobRepository jobRepository;
 //    private final PlatformTransactionManager transactionManager;
-//
-//    private final UserService userService;
 //    private final static int CHUNK_SIZE = 10;
 //
 //
 //    @Bean
-//    public Job job() {
+//    public Job job() throws Exception {
 //        return new JobBuilder(JOB_NAME, jobRepository)
 //            .start(step())
 //            .build();
@@ -61,11 +49,10 @@
 //
 //    @Bean(name=JOB_NAME+"_step")
 //    @JobScope
-//    public Step step() {
+//    public Step step() throws Exception {
 //        return new StepBuilder(JOB_NAME + "_step", jobRepository)
-//            .<UserPay, User> chunk(CHUNK_SIZE, transactionManager)
+//            .<User, User> chunk(CHUNK_SIZE, transactionManager)
 //            .reader(reader(null, null))
-//            .processor(processor())
 //            .writer(writer())
 //            .build();
 //    }
@@ -74,7 +61,7 @@
 //    @Bean(name=JOB_NAME+"_reader")
 //    @StepScope
 //    public ItemStreamReader<User> reader(
-//        @Value("#{jobParameters[status]}") ProductStatus status,
+//        @Value("#{jobParameters[status]}") String status,
 //        @Value("#{jobParameters[createDate]}") String createDateStr) throws Exception {
 //
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -101,16 +88,12 @@
 //
 //
 //    @Bean
-//    public JpaItemWriter writer(SearchType searchType) {
+//    public JpaItemWriter writer() {
 //        return new JpaItemWriterBuilder<User>()
 //            .entityManagerFactory(entityManagerFactory)
 //            .build();
 //    }
 //
-//    @Bean
-//    public CustomItemProcessor processor() {
-//        return new CustomItemProcessor();
-//    }
 //
 //}
 //// @Bean : 싱글턴 방식 => 최초 한 번만 메모리에 적재 이후로도 하나의 인스턴스로 계속 사용

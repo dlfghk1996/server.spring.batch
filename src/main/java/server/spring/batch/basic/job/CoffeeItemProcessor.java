@@ -1,9 +1,8 @@
-package server.spring.batch.basic;
+package server.spring.batch.basic.job;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.stereotype.Component;
 
 
 public class CoffeeItemProcessor  implements ItemProcessor<Coffee, Coffee> {
