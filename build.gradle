@@ -29,15 +29,12 @@ dependencies {
 
 	// DataBase
 
-	// DataBase
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 
 	// Batch
-
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
-
 
 	// ETC
 	implementation 'org.modelmapper:modelmapper:2.4.2'
@@ -46,7 +43,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// Test
-	implementation 'junit:junit:4.13.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.batch:spring-batch-test'
 }
